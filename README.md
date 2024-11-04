@@ -12,7 +12,7 @@ bm23id24_xas consists of 4 modules:
  
  pca_estimator works with the dictionary produced by xas but can also work with an independent txt file contatining energy as the first column and normalized XAS spectra as 2nd and other columns. It allows to interactivelly perform PCA. The function is based on pyfitit, but readapted for the needs of the beamline users. The result is a dictionary.
  
- MCR-ALS works with the dictionary produced by xas, but can also work with an independent txt file contatining energy as the first column and normalized XAS spectra as 2nd and other columns. It allows to interactivelly perform MCR-ALS analysis. It is possible to provide reference spectra if needed as dictionaries produced by xas_v2_6 or txt files if needed. The result is a dictionary.
+ MCR-ALS works with the dictionary produced by xas, but can also work with an independent txt file contatining energy as the first column and normalized XAS spectra as 2nd and other columns. It allows to interactivelly perform MCR-ALS analysis. It is possible to provide reference spectra if needed as dictionaries produced by xas or txt files if needed. The result is a dictionary.
  
  LCA works with the dictionary produced by xas, but can also work with txt files for both, data and references.
  
