@@ -19,10 +19,7 @@ from larch import Group
 from larch.xafs import *
 from datetime import datetime
 from scipy.signal import savgol_filter as savgol
-import tkinter as tk
-from tkinter import filedialog
-root = tk.Tk()
-root.withdraw()
+
 
 
 
@@ -43,7 +40,7 @@ def xas(n_first = 1, n_last = None, skiplist = [], path = None, calibrate = Fals
     """
     ### Choosing the file
     if path == None:
-        path = filedialog.askopenfilename(title="Select a file", filetypes=(("h5 files", "*.h5"), ("All files", "*.*")))       # full path containing filename
+        print('Please specify the file path to a .h5 file and restart')
             
     ### Saving directory 
     directory=str(os.path.dirname(path))  # that will save to the directory of the .h5 file
