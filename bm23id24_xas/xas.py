@@ -38,6 +38,9 @@ def load_params(file_path):
 
 
 def xas(n_first = 1, n_last = None, skiplist = [], path = None, calibrate = False, align = False, interpolate = False, exafs = False, merge = 1):
+    """
+    xas v2.6
+    """
     ### Choosing the file
     if path == None:
         path = filedialog.askopenfilename(title="Select a file", filetypes=(("h5 files", "*.h5"), ("All files", "*.*")))       # full path containing filename
