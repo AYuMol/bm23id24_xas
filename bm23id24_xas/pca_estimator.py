@@ -1,16 +1,3 @@
-
-def load_params(file_path):
-    spec = importlib.util.spec_from_file_location("params", file_path)
-    params = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(params)
-    
-    # Load all variables from the module directly into the global scope
-    globals().update({key: value for key, value in params.__dict__.items() if not key.startswith("__")})
-
-
-
-
-
 import numpy as np
 from sklearn.decomposition import PCA as PCAskl
 import matplotlib.pyplot as plt
@@ -84,7 +71,7 @@ def pca_file(dataset=None, skiplist =[],file_path = None , xanes_start = None, x
 
 
     
-        plt.show()
+       # plt.show()
     
     
    
@@ -274,7 +261,7 @@ class PCAest:
 
 
         fig.tight_layout()
-        plt.show()
+      #  plt.show()
         
         return s, ind, ie, fisher
     
@@ -329,7 +316,7 @@ class PCAest:
                 axs[1].set_xlabel('Scan')
                 fig.tight_layout()  
 
-                plt.show()
+              #  plt.show()
                 
 
         if plot_noise == False:
@@ -343,7 +330,7 @@ class PCAest:
                 plt.xlabel('Scan')
                 plt.title('R factor')
                 plt.legend()
-                plt.show()
+               # plt.show()
                 plt.tight_layout()
                 
         
@@ -486,7 +473,7 @@ class PCAest:
         axs_twin.tick_params(axis='y', labelcolor='tab:red')
       
         fig.tight_layout()  
-        plt.show()
+       # plt.show()
         return nss_values, nss_val
     
 ########################################################################################
@@ -547,7 +534,7 @@ class PCAest:
                 pcfitdic[title]["residuals"]= residuals
                 
                 
-            plt.show()
+          #  plt.show()
             
         return pcfitdic
         
