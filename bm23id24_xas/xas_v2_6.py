@@ -47,8 +47,10 @@ def xas(n_first = 1, n_last = None, skiplist = [], path = None, calibrate = Fals
     print(f'Directory set to: {directory}')        
     
     ### Reading params.py file
-    load_params(directory+"/params.py")
-
+    try:
+        load_params(directory+"/params.py")
+    except:
+        load_params(directory+"\params.py")
     ### Setting filename   
     filename = str(os.path.basename(path)) 
     print(f'Working with file: {filename}\n')        
