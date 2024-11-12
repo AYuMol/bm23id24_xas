@@ -1,4 +1,6 @@
-xraylarch
-pymcr
-pyfitit
-h5py
+xraylarch == 0.9.81
+pymcr == 0.5.1
+pyfitit == 3.1.7
+h5py == 3.12.1
+numpy == 2.0.2
+scikit_learn == 1.5.2
