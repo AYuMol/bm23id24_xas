@@ -2,13 +2,14 @@ import numpy as np
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+import matplotlib.gridspec as gs
 
 from sklearn.linear_model import LinearRegression
 from scipy.optimize import curve_fit
 
 
  
-def lc_check(data, components,div_vals):
+def lc_check(data, components,div_vals, LCA_fit = False):
     
     lcf_dic = {}
     # Extract energy and remove the first column from data and components
@@ -97,5 +98,31 @@ def lc_check(data, components,div_vals):
     lcf_dic['Concentration'] = conc
     lcf_dic['Components']= components
     
+    if LCA_fit == True:
+        while True:
+            scan_input = input("Please select a scan number for the MCR fit (or 'q' to quit): ")
+            
+            if scan_input.lower() == 'q':
+                break
+
+            scan_input = int(scan_input)
+        
+            fig = plt.figure(figsize=(8, 7),dpi=300)
+            g = gs.GridSpec(2, 1, height_ratios=[5, 1])
+            ax1 = fig.add_subplot(g[0])
+            ax2 = fig.add_subplot(g[1])
+            ax2.set_xlabel('Energy', size=12)
+            ax1.set_ylabel('Intensity', size=12)
+            ax2.set_ylabel('Residuals', size=12)
+            ax1.set_title('LCF Fit', size=15)
+            
+            
+            line, = ax1.plot(energy, data[:,scan_input], color='black', label='Spectrum: '+str(scan_input))
+            line1, = ax1.plot(energy, np.matmul(components, np.transpose(conc))[:,scan_input], color='blue', label="LCA")
+            residuals = data[:, scan_input] - np.matmul(components, np.transpose(conc))[:,scan_input]
+            line2, = ax2.plot(energy, residuals)
+            ax1.legend()
+            plt.show()
+            
     return lcf_dic
 

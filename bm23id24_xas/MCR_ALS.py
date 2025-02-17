@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jun  7 13:13:51 2024
+
+@author: OPPCEXPV
+"""
 
 import numpy as np
 import matplotlib.gridspec as gs
@@ -15,16 +21,6 @@ from pymcr.constraints import ConstraintNonneg, ConstraintNorm
 from sklearn.linear_model import Ridge
 from scipy.interpolate import interp1d
 import numpy as np
-
-# import importlib.util
-
-# def load_params(file_path):
-#     spec = importlib.util.spec_from_file_location("params", file_path)
-#     params = importlib.util.module_from_spec(spec)
-#     spec.loader.exec_module(params)
-    
-#     # Load all variables from the module directly into the global scope
-#     globals().update({key: value for key, value in params.__dict__.items() if not key.startswith("__")})
 
 
 def create_file(datasets=[], skiplist =[],file_path = None , xanes_start = None, xanes_end = None):
@@ -171,15 +167,14 @@ def simplisma(d, nr , error=5):
     for i in range(nr):
         sp[0:nrow,i]=d[0:nrow,int(imp[i])]
 		
-    # plt.figure(figsize = (10,6),dpi=300)
-    plt.figure().set_figheight(10)
+    plt.figure(figsize = (10,6),dpi=300)
     for i in range(nr):
-        plt.plot(energy,sp[:,i]+0.8*i, label = str(i+1))
+        plt.plot(energy,sp[:,i], label = str(i+1))
     plt.title('SIMPLISMA: Initial guess')
     plt.ylabel(r'Normalized $\mu$')
     plt.xlabel('Energy')
     plt.legend()
-    # plt.show()
+    plt.show()
     concs = np.dot(np.linalg.pinv(sp), d)
 	
     
@@ -210,7 +205,7 @@ def mcr(d,nr, ref_spectra=None, fix_spectra=None, div_vals=[], mcr_plot=False, c
     if ref_spectra is None:
         adjust_fix_spectra = [x - 1 for x in fix_spectra]
         mcrar = McrAR(max_iter=500, st_regr='NNLS', c_regr=OLS(), 
-                    c_constraints=[ConstraintNonneg(), ConstraintNorm()])
+                    c_constraints=[ConstraintNonneg(), ConstraintNorm()],tol_increase=1)
         
         mcrar.fit(np.transpose(d),ST=np.transpose(sp), st_fix=adjust_fix_spectra,verbose=True)
         
@@ -257,7 +252,7 @@ def mcr(d,nr, ref_spectra=None, fix_spectra=None, div_vals=[], mcr_plot=False, c
         
         adjust_fix_spectra = [x - 1 for x in fix_spectra]
         mcrar = McrAR(max_iter=500, st_regr='NNLS', c_regr=OLS(), 
-                    c_constraints=[ConstraintNonneg(), ConstraintNorm()])
+                    c_constraints=[ConstraintNonneg(), ConstraintNorm()],tol_increase=1)
         
         mcrar.fit(np.transpose(d),ST=np.transpose(sp), st_fix=adjust_fix_spectra,verbose=True)
         
@@ -277,12 +272,12 @@ def mcr(d,nr, ref_spectra=None, fix_spectra=None, div_vals=[], mcr_plot=False, c
     mcr_dic={}
     mcr_dic["Initial guess"]={}
     mcr_dic["MCR"]={}
-    mcr_dic["Concentration"]={}
+    mcr_dic["Concetration"]={}
     mcr_dic["Energy"]=energy
     for i in range(nr):
         mcr_dic["Initial guess"][i]=sp[:,i]
         mcr_dic["MCR"][i]=mcrar.ST_opt_.T[:,i]
-        mcr_dic["Concentration"][i]=mcrar.C_opt_[:,i]
+        mcr_dic["Concetration"][i]=mcrar.C_opt_[:,i]
     
     
     if mcr_plot == True:
@@ -298,7 +293,7 @@ def mcr(d,nr, ref_spectra=None, fix_spectra=None, div_vals=[], mcr_plot=False, c
         
         plt.figure(figsize = (6,8),dpi=300)
         for i in range(nr):
-            plt.plot(energy,mcrar.ST_opt_.T[:,i]+i*0.8, label = str(i+1)+' component')
+            plt.plot(energy,mcrar.ST_opt_.T[:,i]-i*0.8, label = str(i+1)+' component')
             plt.title('MCR-AR Retrieved')
             plt.ylabel(r'Normalized $\mu$')
             plt.xlabel('Energy')
@@ -398,10 +393,9 @@ def mcr(d,nr, ref_spectra=None, fix_spectra=None, div_vals=[], mcr_plot=False, c
     
 ################################ PROCESS REFERENCES #############################
 
-def process_data_ref_txt(file_paths, xanes_start,xanes_end):
+def process_data_ref_txt(file_paths, num_keys_to_select):
     # Initialize dictionaries
     ref_dicts = {i: {"energy": [], "flat": []} for i in range(len(file_paths))}
-    interp_grid = np.linspace(xanes_start, xanes_end, 2000) 
 
     # General function to read data from a file and populate the dictionary
     def read_data(file_path, ref_dict):
@@ -416,7 +410,6 @@ def process_data_ref_txt(file_paths, xanes_start,xanes_end):
                             energy, flat = line.split()#('\t')
                             ref_dict['energy'].append(float(energy.strip()))
                             ref_dict['flat'].append(float(flat.strip()))
-                           
                         except ValueError as e:
                             print(f"Error parsing line '{line}': {e}")
         except FileNotFoundError as e:
@@ -424,23 +417,23 @@ def process_data_ref_txt(file_paths, xanes_start,xanes_end):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-        return ref_dict
-   
-     
-    
+    # General function to select evenly spaced indices and create a new dictionary
+    def select_indices(ref_dict, num_keys_to_select):
+        total_entries = len(ref_dict["energy"])
+        indices = np.linspace(0, total_entries - 1, num_keys_to_select, dtype=int)
+        
+        sel_ref = {
+            "energy": [ref_dict["energy"][i] for i in indices],
+            "flat": [ref_dict["flat"][i] for i in indices]
+        }
+        
+        return sel_ref
 
     # Read data and create new dictionaries
     selected_refs = {}
     for i, file_path in enumerate(file_paths):
-        ref_dict = read_data(file_path, ref_dicts[i])
-        selected_refs[i] = {}
-        selected_refs[i]['energy'] = interp_grid
-        
-        
-        selected_refs[i]['flat'] = interp1d(ref_dict['energy'],ref_dict['flat'], bounds_error = False, fill_value = 'extrapolate')(interp_grid)
-        # f= interp1d(energy,flat)
-        
-        
+        read_data(file_path, ref_dicts[i])
+        selected_refs[i] = select_indices(ref_dicts[i], num_keys_to_select)
     
     return selected_refs
 
