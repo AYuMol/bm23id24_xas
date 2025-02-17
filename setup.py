@@ -1,7 +1,7 @@
 from setuptools import find_packages, setup
 
-with open("requirements.txt") as f:
-    required = f.read().splitlines()
+#with open("requirements.txt") as f:
+ #   required = f.read().splitlines()
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -14,5 +14,10 @@ setup(
     description='Library for XAS data analysis',
     long_description=long_description,
     author='Molokova, Lomachenko, Lopez Romero',
-    install_requires = required,
+    install_requires=[
+        'xraylarch',
+        'pymcr',
+        'pyfitit',
+        'h5py'
+    ],
 )
