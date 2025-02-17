@@ -31,7 +31,15 @@ import larch
 from larch import Group
 from larch.xafs import *
 
-from params import *
+import importlib.util
+
+def load_params(file_path):
+    spec = importlib.util.spec_from_file_location("params", file_path)
+    params = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(params)
+    
+    # Load all variables from the module directly into the global scope
+    globals().update({key: value for key, value in params.__dict__.items() if not key.startswith("__")})
 
 
 def etok(e):
@@ -650,6 +658,12 @@ def xas(n_first = 1, n_last = None, skiplist = None, path = None, calibrate = Fa
         
     ### Opening the file
     directory, filename, file_extension, dataset = load_file(path)
+
+    ### Reading params.py file
+    try:
+        load_params(directory+"/params.py")
+    except:
+        load_params(directory+"\params.py")
     
     
     ### Creating the dictionary and filling it with raw data

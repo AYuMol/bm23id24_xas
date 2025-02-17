@@ -10,7 +10,7 @@ with open("README.md", "r") as fh:
 setup(
     name='bm23id24_xas',
     packages=find_packages(include=['bm23id24_xas']),
-    version='0.0.11',
+    version='0.0.12',
     description='Library for XAS data analysis',
     long_description=long_description,
     author='Molokova, Lomachenko, Lopez Romero',
