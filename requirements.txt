@@ -1,4 +1,4 @@
-xraylarch == 0.9.81
-pymcr == 0.5.1
-pyfitit == 3.1.7
-h5py == 3.12.1
+xraylarch
+pymcr 
+pyfitit
+h5py 
