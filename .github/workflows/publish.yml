@@ -1,48 +1,38 @@
-name: Clear Python cache
-run: rm -rf ~/.cache/pip
-
-
-name: Ensure setuptools and wheel are installed
-run: |
-  python -m pip install --upgrade pip
-  pip install --upgrade setuptools wheel
-
 name: Publish to PyPI
 
 on:
   release:
     types: [published]
 
-  
 jobs:
-  build-and-publish:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
-      - name: Check out code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      # Set up Python environment
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.x"  # Adjust as per your project requirements
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'  # Change this if needed
 
-      # Install dependencies
-      - name: Install build dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install build twine
+    - name: Clear Python cache (force clean build)
+      run: rm -rf ~/.cache/pip
 
-      # Build the package
-      - name: Build the package
-        run: python -m build
+    - name: Ensure setuptools and wheel are installed
+      run: |
+        python -m pip install --upgrade pip
+        pip install --upgrade setuptools wheel
 
-      # Publish the package to PyPI
-      - name: Publish to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          python -m twine upload dist/* --verbose
+    - name: List directory contents for debugging
+      run: ls -la
+
+    - name: Build the package
+      run: python setup.py sdist bdist_wheel
+
+    - name: Publish to PyPI
+      run: python -m twine upload dist/* --verbose
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
