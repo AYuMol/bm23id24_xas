@@ -1,3 +1,7 @@
+name: Clear Python cache
+run: rm -rf ~/.cache/pip
+
+
 name: Publish to PyPI
 
 on:
