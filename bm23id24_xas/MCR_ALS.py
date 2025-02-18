@@ -363,6 +363,7 @@ def mcr(d,nr, ref_spectra=None, fix_spectra=None, div_vals=[], mcr_plot=False, c
     mcr_dic["R-factor"]=r_factor
     
     if MCR_fit == True:
+        mcr_dic['fits'] = {}
         while True:
             scan_input = input("Please select a scan number for the MCR fit (or 'q' to quit): ")
             
@@ -380,6 +381,8 @@ def mcr(d,nr, ref_spectra=None, fix_spectra=None, div_vals=[], mcr_plot=False, c
             ax2.set_ylabel('Residuals', size=12)
             ax1.set_title('MCR Fit', size=15)
             
+            spectrum = d[:,scan_input]
+            fitted = np.matmul(comp, np.transpose(conc))[:,scan_input]
             
             line, = ax1.plot(energy, d[:,scan_input], color='black', label='Spectrum: '+str(scan_input))
             line1, = ax1.plot(energy, np.matmul(comp, np.transpose(conc))[:,scan_input], color='blue', label="MCR")
@@ -388,6 +391,10 @@ def mcr(d,nr, ref_spectra=None, fix_spectra=None, div_vals=[], mcr_plot=False, c
             ax1.legend()
             plt.show()
             
+            mcr_dic['fits'][scan_input]={}
+            mcr_dic['fits'][scan_input]['energy'] = energy
+            mcr_dic['fits'][scan_input]['data'] = spectrum
+            mcr_dic['fits'][scan_input]['fit'] = fitted
         
     return mcrar, mcr_dic
     

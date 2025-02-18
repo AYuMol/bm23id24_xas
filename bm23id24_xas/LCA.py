@@ -100,12 +100,13 @@ def lc_check(data, components,div_vals, LCA_fit = False):
     lcf_dic['Energy']= energy
     
     if LCA_fit == True:
+        lcf_dic['fits']= {}
         while True:
             scan_input = input("Please select a scan number for the MCR fit (or 'q' to quit): ")
             
             if scan_input.lower() == 'q':
                 break
-
+            
             scan_input = int(scan_input)
         
             fig = plt.figure(figsize=(8, 7),dpi=300)
@@ -117,6 +118,8 @@ def lc_check(data, components,div_vals, LCA_fit = False):
             ax2.set_ylabel('Residuals', size=12)
             ax1.set_title('LCF Fit', size=15)
             
+            spectrum = data[:,scan_input]
+            fitted = np.matmul(components, np.transpose(conc))[:,scan_input]
             
             line, = ax1.plot(energy, data[:,scan_input], color='black', label='Spectrum: '+str(scan_input))
             line1, = ax1.plot(energy, np.matmul(components, np.transpose(conc))[:,scan_input], color='blue', label="LCA")
@@ -124,6 +127,10 @@ def lc_check(data, components,div_vals, LCA_fit = False):
             line2, = ax2.plot(energy, residuals)
             ax1.legend()
             plt.show()
+            lcf_dic['fits'][scan_input]={}
+            lcf_dic['fits'][scan_input]['energy'] = energy
+            lcf_dic['fits'][scan_input]['data'] = spectrum
+            lcf_dic['fits'][scan_input]['fit'] = fitted
             
     return lcf_dic
 
