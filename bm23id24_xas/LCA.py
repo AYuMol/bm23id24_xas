@@ -10,7 +10,18 @@ from scipy.optimize import curve_fit
 
  
 def lc_check(data, components,div_vals, LCA_fit = False):
+    """ 
+    A fucntion to perform linear combination fitting on the XAS data
     
+    Parameters:
+    data (array): Data matrix
+    components (array): Reference spectra
+    div_vals (list, optional): Division values for concentration plot regions (in case of using more that one dataset)
+    LCA_fit (bool, optional): If True, provide detailed LCA fit for individual scans and saves them. Default is False.
+
+    Returns:
+    A dictionary containing MCR results.
+    """
     lcf_dic = {}
     # Extract energy and remove the first column from data and components
     energy = data[:, 0]

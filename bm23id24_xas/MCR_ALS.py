@@ -192,7 +192,7 @@ def mcr(d,nr, ref_spectra=None, fix_spectra=None, div_vals=[], mcr_plot=False, c
     div_vals (list, optional): Division values for concentration plot regions (in case of using more that one dataset).
     mcr_plot (bool, optional): If True, plot MCR retrieved spectra. Default is False.
     conc_plot (bool, optional): If True, plot concentration profiles. Default is False.
-    MCR_fit (bool, optional): If True, provide detailed MCR fit for individual scans. Default is False.
+    MCR_fit (bool, optional): If True, provide detailed MCR fit for individual scans and saves them. Default is False.
     Rfactor_plot (bool, optional): If True, plot R-factor. Default is False.
 
     Returns:
