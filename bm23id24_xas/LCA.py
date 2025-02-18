@@ -97,6 +97,7 @@ def lc_check(data, components,div_vals, LCA_fit = False):
     lcf_dic['R-factor'] = r_factor
     lcf_dic['Concentration'] = conc
     lcf_dic['Components']= components
+    lcf_dic['Energy']= energy
     
     if LCA_fit == True:
         while True:
