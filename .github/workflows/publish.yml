@@ -17,13 +17,11 @@ jobs:
       with:
         python-version: '3.8'
 
-    - name: Clear Python cache (force clean build)
-      run: rm -rf ~/.cache/pip
-
     - name: Install build and publishing tools
       run: |
+        which python
         python -m pip install --upgrade pip
-        pip install setuptools wheel build twine
+        python -m pip install setuptools wheel build twine
 
     - name: Build the package
       run: python -m build
