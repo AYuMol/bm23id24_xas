@@ -17,20 +17,14 @@ jobs:
       with:
         python-version: '3.8'
 
-    - name: Install build and publishing tools
-      run: |
-        which python
-        python -m pip install --upgrade pip
-        python -m pip install setuptools wheel build twine
-
-    - name: Build the package
-      run: python -m build
-
-    - name: List built files
-      run: ls -la dist/
-
-    - name: Publish to PyPI
+    - name: Build and publish
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-      run: python -m twine upload dist/* --verbose
+      run: |
+        echo "Python path: $(which python)"
+        python -m pip install --upgrade pip
+        python -m pip install setuptools wheel build twine
+        python -m build
+        ls -la dist/
+        python -m twine upload dist/* --verbose
