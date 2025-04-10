@@ -15,25 +15,24 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.8'  # Change this if needed
+        python-version: '3.8'
 
     - name: Clear Python cache (force clean build)
       run: rm -rf ~/.cache/pip
 
-    - name: Ensure setuptools and wheel are installed
+    - name: Install build and publishing tools
       run: |
         python -m pip install --upgrade pip
-        pip install --upgrade setuptools wheel
         pip install setuptools wheel build twine
 
-    - name: List directory contents for debugging
-      run: ls -la
-
     - name: Build the package
-      run: python setup.py sdist bdist_wheel
+      run: python -m build
+
+    - name: List built files
+      run: ls -la dist/
 
     - name: Publish to PyPI
-      run: python -m twine upload dist/* --verbose
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      run: python -m twine upload dist/* --verbose
