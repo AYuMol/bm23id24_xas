@@ -19,6 +19,6 @@ setup(
         'pymcr',
         'pyfitit',
         'h5py',
-        'numpy<2.0',
+       # 'numpy>=1.22,<2.0',
     ],
 )
