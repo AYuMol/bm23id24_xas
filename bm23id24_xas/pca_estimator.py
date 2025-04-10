@@ -198,7 +198,7 @@ class PCAest:
         cwd=os.getcwd()
         
             
-    def PCA_Statistic(intensity, pc = None):
+    def PCA_Statistic(intensity,energy, pc = None):
         """
         Calculates and plots various statistics related to PCA.
 
@@ -262,9 +262,39 @@ class PCAest:
 
         fig.tight_layout()
         plt.show()
-        
+    
         return s, ind, ie, fisher
     
+    def abstract_comp(intensity,energy, pc = None):
+        u,s,v=makeSVD(intensity)
+        if np.shape(intensity)[0]<np.shape(intensity)[1]: intensity=np.transpose(intensity)
+        
+        sdiag=np.diag(s)
+        if np.shape(intensity)[0]<np.shape(intensity)[1]:
+            abstract=np.transpose(v)
+            abstractScaled=np.transpose(np.dot(sdiag,v))
+        else:
+            abstract=u
+            abstractScaled=np.dot(abstract,sdiag)
+            
+        plt.figure(figsize=(8, 8),dpi=300)
+        for i in range(0,pc):
+            plt.plot(energy,abs(abstractScaled[:,i]))
+            
+        plt.xlabel('Energy')
+        plt.title('Abstract components')
+        plt.show()
+        
+        
+        
+        keys_titles = [f"{i} Component" for i in range(1, abstractScaled.shape[1]+1)]
+        abscomp_dict = {"Energy": energy}
+        abscomp_dict.update({title: abstractScaled[:, i] for i, title in enumerate(keys_titles)})
+
+
+        return abstractScaled,abscomp_dict
+    
+        
 ########################################################################################
 ###################################### Rfactor #########################################
 ########################################################################################      
@@ -314,10 +344,22 @@ class PCAest:
                 # axs[1].plot(x,noise_array_norm)
                 axs[1].set_title('Average noise')
                 axs[1].set_xlabel('Scan')
-                fig.tight_layout()  
-
-                plt.show()
+                fig.tight_layout()
                 
+             
+            plt.figure(figsize=(8, 3),dpi=300)
+            for n in range(1,pc+1):
+                pcfit_initial=np.dot(u[:,0:n],np.dot(np.diag(s[0:n]),v[0:n,:]))
+                resvalue=xanesRfactor(intensity, pcfit_initial)
+                 
+                plt.plot(np.arange(ncol),resvalue, label=f"PC = {n}" )
+                plt.xlabel('Scan')
+                plt.title('R factor')
+                plt.yscale("log")
+                plt.legend(loc="center right")
+            plt.show()
+                
+            
 
         if plot_noise == False:
             for n in range(1,pc+1):
@@ -332,6 +374,18 @@ class PCAest:
                 plt.legend()
                 plt.show()
                 plt.tight_layout()
+            
+            plt.figure(figsize=(8, 3),dpi=300)
+            for n in range(1,pc+1):
+                pcfit_initial=np.dot(u[:,0:n],np.dot(np.diag(s[0:n]),v[0:n,:]))
+                resvalue=xanesRfactor(intensity, pcfit_initial)
+                
+                plt.plot(np.arange(ncol),resvalue, label=f"PC = {n}" )
+                plt.xlabel('Scan')
+                plt.title('R factor')
+                plt.yscale("log")
+                plt.legend(loc="center right")
+            plt.show()
                 
         
         return resvalue
@@ -548,7 +602,7 @@ class PCAest:
 ########################################################################################
 
 def pca_estimator(dataset=None, skiplist=[], file_path = None , xanes_start = None, xanes_end = None, plot_xanesrange = True, pc = None,
-                  statistic = True, r_factor = True, plot_noise = True, PCA_fit= False, NSS = True):
+                  abs_comp=False,statistic = True, r_factor = True, plot_noise = True, PCA_fit= False, NSS = True):
     """
     Perform PCA estimation.
 
@@ -588,14 +642,17 @@ def pca_estimator(dataset=None, skiplist=[], file_path = None , xanes_start = No
     pca_file(dataset=dataset,skiplist=skiplist,file_path = file_path , xanes_start = xanes_start, xanes_end = xanes_end, plot_xanesrange = plot_xanesrange)
     xanes=Dataset(np.loadtxt(file_path))
     
-     
+    if abs_comp == True:
+        abstractScaled,abscomp_dict = PCAest.abstract_comp(xanes.intensity, xanes.energy, pc=pc)
+        pca_datadic["Abstract components"]= abscomp_dict
     
     if statistic == True:
-        s, ind, fisher, ie = PCAest.PCA_Statistic(xanes.intensity, pc=pc)
+        s, ind, fisher, ie = PCAest.PCA_Statistic(xanes.intensity,xanes.energy, pc=pc)
         pca_datadic["Scree-plot"] = s
         pca_datadic["IND"] = ind
         pca_datadic["Fisher"] = fisher
         pca_datadic["IE"] = ie
+        
              
     if r_factor == True:
         resvalue = PCAest.Rfactor(xanes.intensity,  pc=pc, plot_noise = plot_noise,dataset=dataset)
